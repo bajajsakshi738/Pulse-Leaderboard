@@ -1,0 +1,92 @@
+# Render Blueprint — deploys the full backend stack in one go.
+# Push this repo to GitHub, then in the Render dashboard choose
+# "New +" -> "Blueprint" and point it at this repo. Render will read
+# this file and provision everything below automatically.
+#
+# After the first deploy, run the migration in migrations/0001_init.sql
+# against the created Postgres database (see README "Deploying" section
+# for the exact `psql` command using the connection string Render gives you).
+
+databases:
+  - name: leaderboard-postgres
+    plan: free
+    databaseName: leaderboard
+    user: leaderboard
+
+# One secret shared by the API and the generator, so Render generates
+# it once and gives both services the same value.
+envVarGroups:
+  - name: leaderboard-shared
+    envVars:
+      - key: RATE_LIMIT_BYPASS_TOKEN
+        generateValue: true
+
+services:
+  - type: redis
+    name: leaderboard-redis
+    plan: free
+    ipAllowList: []  # only allow internal connections from other Render services
+
+  - type: web
+    name: leaderboard-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: SERVER_PORT
+        value: 8080
+      - key: DATABASE_URL
+        fromDatabase:
+          name: leaderboard-postgres
+          property: connectionString
+      - key: REDIS_ADDR
+        fromService:
+          name: leaderboard-redis
+          type: redis
+          property: hostport
+      - key: REDIS_USE_TLS
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRY_HOURS
+        value: "72"
+      - key: ALLOWED_ORIGINS
+        value: https://your-frontend.vercel.app
+      # Render's proxy appends the real client IP to X-Forwarded-For,
+      # which the per-IP rate limit needs.
+      - key: TRUST_PROXY_HEADER
+        value: "true"
+      - fromGroup: leaderboard-shared
+
+  - type: worker
+    name: leaderboard-generator
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: ./generator
+    plan: free
+    envVars:
+      # NOTE: Render's `fromService ... property: hostport` returns a
+      # bare "host:port" with no scheme, which won't work as-is for an
+      # http.Client base URL. After your first deploy, open the
+      # leaderboard-api service in the Render dashboard, copy its
+      # "Internal Address" value (looks like leaderboard-api:10000),
+      # and set API_BASE_URL manually here as:
+      #   http://<internal-address>
+      # or simply point it at the public URL, e.g.:
+      #   https://leaderboard-api.onrender.com
+      - key: API_BASE_URL
+        value: https://leaderboard-api.onrender.com
+      - key: GENERATOR_NUM_BOTS
+        value: "500"
+      - key: GENERATOR_TICK_INTERVAL
+        value: "1s"
+      - key: GENERATOR_ACTIVE_PER_TICK
+        value: "3"
+      - key: GENERATOR_BOT_PASSWORD
+        generateValue: true
+      - fromGroup: leaderboard-shared
