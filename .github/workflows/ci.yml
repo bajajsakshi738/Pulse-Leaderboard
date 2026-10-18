@@ -1,0 +1,92 @@
+# Runs on every push and pull request: formatting, vet, the Go tests with
+# the race detector (against a real Postgres and Redis), and a production
+# build of the Angular app.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: leaderboard
+          POSTGRES_PASSWORD: leaderboard
+          POSTGRES_DB: leaderboard
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U leaderboard"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      TEST_DATABASE_URL: postgres://leaderboard:leaderboard@localhost:5432/leaderboard?sslmode=disable
+      TEST_REDIS_ADDR: localhost:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: backend/go.sum
+
+      # Needs backend/go.sum to be committed. If this step fails with
+      # "missing go.sum entry", run `go mod tidy` locally and commit go.sum.
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Apply database migrations
+        run: |
+          sudo apt-get install -y --no-install-recommends postgresql-client >/dev/null
+          for f in migrations/*.sql; do
+            PGPASSWORD=leaderboard psql -h localhost -U leaderboard -d leaderboard -v ON_ERROR_STOP=1 -f "$f"
+          done
+
+      - name: Test
+        run: go test -race -count=1 ./...
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm ci
+
+      - name: Production build
+        run: npm run build
