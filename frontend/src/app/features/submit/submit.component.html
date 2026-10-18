@@ -1,0 +1,91 @@
+<section class="page" [class]="'page ' + gameClass(game())">
+  <div class="page__head">
+    <div>
+      <a class="submit__back" [routerLink]="['/leaderboard', game()]">Back to {{ labels[game()] }}</a>
+      <h1 class="page__title">Submit a score</h1>
+      <p class="page__sub">Points are added to your total for the game you pick.</p>
+    </div>
+  </div>
+
+  <div class="submit">
+    <form class="card submit__form" (submit)="$event.preventDefault(); submit()" novalidate>
+      <fieldset class="submit__games">
+        <legend class="submit__legend">Game</legend>
+        <div class="pills">
+          @for (g of games; track g.code) {
+            <label class="game-option" [class]="'game-option ' + gameClass(g.code)" [class.game-option--on]="game() === g.code">
+              <input
+                type="radio"
+                name="game"
+                [value]="g.code"
+                [checked]="game() === g.code"
+                (change)="chooseGame(g.code)"
+              />
+              {{ g.label }}
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <label class="field">
+        Points
+        <input
+          class="field__input submit__points"
+          type="number"
+          inputmode="numeric"
+          min="1"
+          [max]="maxPoints"
+          [formControl]="points"
+          [attr.aria-invalid]="points.invalid && points.touched"
+          aria-describedby="points-hint"
+        />
+        @if (points.touched && points.invalid) {
+          <span class="field__error">Enter a whole number from 1 to {{ maxPoints | number }}.</span>
+        } @else {
+          <span class="field__hint" id="points-hint">Between 1 and {{ maxPoints | number }} per submission</span>
+        }
+      </label>
+
+      <button type="submit" class="btn btn--block" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Submitting…' : 'Submit score' }}
+      </button>
+
+      <p class="field__error" role="alert" aria-live="assertive">{{ errorMessage() }}</p>
+    </form>
+
+    <div class="submit__result" aria-live="polite">
+      @if (result(); as r) {
+        <div class="card submit__saved" [class]="'card submit__saved ' + gameClass(r.game)">
+          <p class="submit__saved-label">Score saved</p>
+          <p class="submit__saved-points mono-number">+{{ r.points | number }}</p>
+          <p class="submit__saved-total">
+            Your {{ labels[r.game] }} total is now <strong class="mono-number">{{ r.total | number }}</strong>
+          </p>
+        </div>
+
+        @if (rankChange(); as change) {
+          <div class="card submit__rank">
+            @if (r.before !== null && r.after !== null) {
+              <div>
+                <span class="submit__rank-label">Before</span>
+                <span class="submit__rank-before mono-number">#{{ r.before | number }}</span>
+              </div>
+              <div>
+                <span class="submit__rank-label">Now</span>
+                <span class="submit__rank-after mono-number">#{{ r.after | number }}</span>
+              </div>
+            }
+            <span class="chip submit__rank-chip" [class.submit__rank-chip--still]="!change.moved">{{ change.text }}</span>
+          </div>
+        }
+
+        <a class="btn btn--ghost btn--block" [routerLink]="['/leaderboard', r.game]">See the leaderboard</a>
+      } @else {
+        <div class="card state submit__empty">
+          <strong>Your result shows here</strong>
+          After you submit, you will see your new total and how your rank changed.
+        </div>
+      }
+    </div>
+  </div>
+</section>

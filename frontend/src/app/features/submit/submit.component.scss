@@ -1,0 +1,136 @@
+.submit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+.submit__back {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.submit__form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 24px;
+}
+
+.submit__games {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.submit__legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.game-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+
+  input {
+    accent-color: var(--g);
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.game-option--on {
+  border-color: var(--g);
+  background: var(--g-tint);
+  color: var(--g-text);
+  font-weight: 600;
+}
+
+.game-option:focus-within {
+  box-shadow: var(--focus);
+}
+
+.submit__points {
+  height: 52px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.submit__result {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.submit__saved {
+  padding: 20px;
+  background: var(--success-tint);
+  border-color: #bfe5cc;
+  color: var(--success);
+}
+
+.submit__saved-label {
+  font-weight: 600;
+}
+
+.submit__saved-points {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #14532d;
+}
+
+.submit__rank {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 18px 20px;
+}
+
+.submit__rank-label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.submit__rank-before,
+.submit__rank-after {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.submit__rank-before {
+  color: var(--muted);
+}
+
+.submit__rank-after {
+  color: var(--g-text);
+}
+
+.submit__rank-chip {
+  margin-left: auto;
+}
+
+.submit__rank-chip--still {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+@media (max-width: 860px) {
+  .submit {
+    grid-template-columns: 1fr;
+  }
+}

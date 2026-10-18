@@ -1,0 +1,20 @@
+:host {
+  display: inline-block;
+}
+
+.score-ticker {
+  display: inline-block;
+  padding: 0 4px;
+  margin: 0 -4px;
+  border-radius: 4px;
+  transition: background-color 0.4s ease;
+}
+
+/* A score that just went up gets a brief highlight. */
+.score-ticker--up {
+  background-color: var(--success-tint);
+}
+
+.score-ticker--down {
+  background-color: var(--danger-tint);
+}

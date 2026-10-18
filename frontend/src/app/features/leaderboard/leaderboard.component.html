@@ -1,0 +1,82 @@
+<section class="page" [class]="'page ' + gameClass(game())">
+  <div class="page__head">
+    <div>
+      <h1 class="page__title">{{ info().label }}</h1>
+      <p class="page__sub">
+        {{ info().description }}
+        <span class="lb-count mono-number">{{ totalRanked() | number }} players ranked.</span>
+      </p>
+    </div>
+
+    @if (auth.isAuthenticated()) {
+      <a class="btn" routerLink="/submit" [queryParams]="submitParams()">Submit a score</a>
+    } @else {
+      <a class="btn" routerLink="/login">Log in to submit a score</a>
+    }
+  </div>
+
+  @if (myRank() && myRank()!.rank > 0) {
+    <div class="lb-me card">
+      <div>
+        <span class="lb-me__label">Your rank</span>
+        <strong class="lb-me__value mono-number">#{{ myRank()!.rank | number }}</strong>
+      </div>
+      <div>
+        <span class="lb-me__label">Your points</span>
+        <strong class="lb-me__value mono-number">{{ myRank()!.score | number }}</strong>
+      </div>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="card state" role="status">Loading leaderboard…</div>
+  } @else if (entries().length === 0) {
+    <div class="card state">
+      <strong>No scores on this board yet</strong>
+      Be the first. Submit a score and you will take rank 1.
+    </div>
+  } @else {
+    <ol class="lb-top" aria-label="Top three players">
+      @for (entry of topThree(); track entry.user_id) {
+        <li class="lb-top__item" [class]="'lb-top__item lb-top__item--' + entry.rank">
+          <app-rank-badge [rank]="entry.rank"></app-rank-badge>
+          <div class="lb-top__text">
+            <span class="lb-top__name">
+              {{ entry.username }}
+              @if (entry.user_id === myUserId()) { <span class="chip">You</span> }
+            </span>
+            <app-score-ticker class="lb-top__score" [value]="entry.score"></app-score-ticker>
+          </div>
+        </li>
+      }
+    </ol>
+
+    @if (rest().length > 0) {
+      <div class="card table" role="table" aria-label="Leaderboard, ranks 4 and below">
+        <div class="table__head" role="row">
+          <span class="table__rank" role="columnheader">Rank</span>
+          <span class="table__name" role="columnheader">Player</span>
+          <span class="table__bar" role="columnheader">Share of top score</span>
+          <span class="table__num" role="columnheader">Points</span>
+        </div>
+        @for (entry of rest(); track entry.user_id) {
+          <div class="table__row" [class.table__row--me]="entry.user_id === myUserId()" role="row">
+            <span class="table__rank" role="cell">
+              <app-rank-badge [rank]="entry.rank"></app-rank-badge>
+            </span>
+            <span class="table__name" role="cell">
+              {{ entry.username }}
+              @if (entry.user_id === myUserId()) { <span class="chip">You</span> }
+            </span>
+            <span class="table__bar" role="cell">
+              <div class="meter"><div class="meter__fill" [style.width.%]="percentOfTop(entry.score)"></div></div>
+            </span>
+            <span class="table__num" role="cell">
+              <app-score-ticker [value]="entry.score"></app-score-ticker>
+            </span>
+          </div>
+        }
+      </div>
+    }
+  }
+</section>

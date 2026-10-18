@@ -1,0 +1,66 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.shell__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell__content {
+  flex: 1;
+  display: flex;
+}
+
+.shell__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(31, 41, 51, 0.45);
+}
+
+/* The top bar only exists on narrow screens, where the sidebar is a drawer. */
+.topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 8px 0 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.topbar__mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--brand);
+}
+
+.topbar__menu {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+}
+
+@media (max-width: 860px) {
+  .topbar {
+    display: flex;
+  }
+}

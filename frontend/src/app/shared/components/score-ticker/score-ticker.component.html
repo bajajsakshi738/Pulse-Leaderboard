@@ -1,0 +1,7 @@
+<span
+  class="score-ticker mono-number"
+  [class.score-ticker--up]="direction() === 'up'"
+  [class.score-ticker--down]="direction() === 'down'"
+>
+  {{ value | number }}
+</span>

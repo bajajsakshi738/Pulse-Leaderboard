@@ -1,0 +1,32 @@
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.rank-badge--gold {
+  background: var(--gold);
+}
+
+.rank-badge--silver {
+  background: var(--silver);
+}
+
+.rank-badge--bronze {
+  background: var(--bronze);
+}
+
+/* Ranks 4 and below are plain numbers, no circle. */
+.rank-badge--standard {
+  min-width: 0;
+  height: auto;
+  border-radius: 0;
+  justify-content: flex-start;
+  font-weight: 600;
+}

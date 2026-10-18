@@ -1,0 +1,136 @@
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 232px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 12px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.sidebar__mark {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--brand);
+}
+
+.sidebar__label {
+  padding: 0 10px 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 6px;
+  color: var(--ink);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--surface-2);
+  }
+}
+
+.sidebar__link--active,
+.sidebar__link--active:hover {
+  background: var(--g-tint, var(--brand-tint));
+  color: var(--g-text, var(--brand-strong));
+  font-weight: 600;
+}
+
+.sidebar__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--g);
+  flex-shrink: 0;
+}
+
+.sidebar__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar__count {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sidebar__footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px;
+  font-weight: 500;
+}
+
+.sidebar__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #6d4aff;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sidebar__username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed;
+    z-index: 40;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    /* Hidden (not just off-screen) so keyboard focus cannot land in a closed drawer. */
+    visibility: hidden;
+    transition: transform 0.2s ease, visibility 0s linear 0.2s;
+    box-shadow: 0 0 40px rgba(31, 41, 51, 0.25);
+  }
+
+  .sidebar--open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.2s ease, visibility 0s;
+  }
+}

@@ -1,0 +1,68 @@
+<section class="page">
+  <div class="page__head">
+    <div>
+      <h1 class="page__title">Top players</h1>
+      <p class="page__sub">
+        Points earned in the period you pick, added up from the full score history,
+        so it stays accurate even after the live board has moved on.
+      </p>
+    </div>
+  </div>
+
+  <div class="report-controls">
+    <div class="pills" role="group" aria-label="Time period">
+      @for (p of periods; track p.value) {
+        <button type="button" class="pill" [attr.aria-pressed]="period() === p.value" (click)="setPeriod(p.value)">
+          {{ p.label }}
+        </button>
+      }
+    </div>
+
+    <label class="report-controls__game">
+      <span class="report-controls__game-label">Game</span>
+      <select class="field__input" [value]="selectedGame()" (change)="setGame($any($event.target).value)">
+        @for (g of gameOptions; track g.code) {
+          <option [value]="g.code" [selected]="g.code === selectedGame()">{{ g.label }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (isLoading()) {
+    <div class="card state" role="status">Crunching the numbers…</div>
+  } @else if (players().length === 0) {
+    <div class="card state">
+      <strong>No scores in this period</strong>
+      Try a longer period, or submit a score to get things started.
+    </div>
+  } @else {
+    <div class="card report">
+      <ol class="report__list">
+        @for (bar of players(); track bar.userId; let i = $index) {
+          <li class="report__row">
+            <span class="report__rank">{{ i + 1 }}</span>
+            <span class="report__name">{{ bar.username }}</span>
+            <span class="report__track" aria-hidden="true">
+              @for (seg of bar.segments; track seg.code) {
+                <span
+                  class="report__seg"
+                  [class]="'report__seg ' + gameClass(seg.code)"
+                  [style.width.%]="seg.widthPct"
+                  [attr.title]="seg.label + ': ' + seg.points"
+                ></span>
+              }
+            </span>
+            <span class="report__total mono-number">{{ bar.total | number }}</span>
+            <span class="sr-only">{{ summary(bar) }}</span>
+          </li>
+        }
+      </ol>
+
+      <ul class="report__legend">
+        @for (g of legend; track g.code) {
+          <li [class]="gameClass(g.code)"><span class="report__swatch"></span>{{ g.label }}</li>
+        }
+      </ul>
+    </div>
+  }
+</section>

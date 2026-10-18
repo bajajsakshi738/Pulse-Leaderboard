@@ -1,0 +1,73 @@
+<div class="auth g-trivia">
+  <div class="auth__panel">
+    <a class="auth__brand" routerLink="/leaderboard/global"><span class="auth__mark" aria-hidden="true"></span>Pulse</a>
+    <div class="auth__pitch">
+      <p class="auth__headline">Pick a name. Start climbing.</p>
+      <p class="auth__lede">Your score history is saved, and your rank updates the moment you play.</p>
+    </div>
+  </div>
+
+  <main class="auth__main">
+    <form class="auth__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div>
+        <h1 class="auth__title">Create your account</h1>
+        <p class="auth__sub">Your username is what everyone sees on the leaderboard.</p>
+      </div>
+
+      <label class="field">
+        Username
+        <input class="field__input" formControlName="username" autocomplete="username"
+               [attr.aria-invalid]="username.invalid && username.touched" />
+        @if (username.touched && username.hasError('required')) {
+          <span class="field__error">Username is required.</span>
+        } @else if (username.touched && username.hasError('minlength')) {
+          <span class="field__error">Username must be at least 3 characters.</span>
+        } @else if (username.touched && username.hasError('pattern')) {
+          <span class="field__error">Use letters, numbers and underscores only.</span>
+        } @else {
+          <span class="field__hint">3 to 30 characters: letters, numbers, underscores</span>
+        }
+      </label>
+
+      <label class="field">
+        Email
+        <input class="field__input" type="email" formControlName="email" autocomplete="email"
+               [attr.aria-invalid]="email.invalid && email.touched" />
+        @if (email.touched && email.hasError('required')) {
+          <span class="field__error">Email is required.</span>
+        } @else if (email.touched && email.hasError('email')) {
+          <span class="field__error">Enter a valid email address.</span>
+        }
+      </label>
+
+      <label class="field">
+        Password
+        <span class="field__control">
+          <input class="field__input field__input--with-button" [type]="showPassword() ? 'text' : 'password'"
+                 formControlName="password" autocomplete="new-password"
+                 [attr.aria-invalid]="password.invalid && password.touched" />
+          <button type="button" class="field__toggle" (click)="showPassword.set(!showPassword())"
+                  [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+                  [attr.aria-pressed]="showPassword()">
+            <app-icon [name]="showPassword() ? 'eye-off' : 'eye'"></app-icon>
+          </button>
+        </span>
+        @if (password.touched && password.hasError('required')) {
+          <span class="field__error">Password is required.</span>
+        } @else if (password.touched && password.hasError('minlength')) {
+          <span class="field__error">Password must be at least 6 characters.</span>
+        } @else {
+          <span class="field__hint">At least 6 characters</span>
+        }
+      </label>
+
+      <p class="auth__error" role="alert">{{ errorMessage() }}</p>
+
+      <button type="submit" class="btn btn--block" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Creating account…' : 'Create account' }}
+      </button>
+
+      <p class="auth__footer">Already registered? <a routerLink="/login">Log in</a></p>
+    </form>
+  </main>
+</div>

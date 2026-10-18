@@ -1,0 +1,82 @@
+<section class="page">
+  <div class="page__head">
+    <div>
+      <h1 class="page__title">My scores</h1>
+      <p class="page__sub">
+        Signed in as <strong>{{ auth.currentUser()?.username }}</strong>
+        ({{ auth.currentUser()?.email }}). Every score you have submitted, newest first.
+      </p>
+    </div>
+    <a class="btn" routerLink="/submit">Submit a score</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat g-global">
+      <span class="stat__label">Total points</span>
+      <span class="stat__value mono-number">{{ totalPoints() | number }}</span>
+    </div>
+    <div class="stat g-trivia">
+      <span class="stat__label">Best single score</span>
+      <span class="stat__value mono-number">{{ bestScore() | number }}</span>
+    </div>
+    <div class="stat g-speed-run">
+      <span class="stat__label">Recent submissions</span>
+      <span class="stat__value mono-number">{{ history().length | number }}</span>
+    </div>
+  </div>
+
+  <h2 class="section-title">Your rank on each board</h2>
+  <div class="ranks">
+    @for (b of boards(); track b.code) {
+      <a class="rank-card card" [class]="'rank-card card ' + gameClass(b.code)" [routerLink]="['/leaderboard', b.code]">
+        <span class="rank-card__label">{{ b.label }}</span>
+        @if (b.rank && b.rank.rank > 0) {
+          <span class="rank-card__value mono-number">#{{ b.rank.rank | number }}</span>
+          <span class="rank-card__score mono-number">{{ b.rank.score | number }} pts</span>
+        } @else {
+          <span class="rank-card__value rank-card__value--empty">Not ranked</span>
+          <span class="rank-card__score">No scores yet</span>
+        }
+      </a>
+    }
+  </div>
+
+  <h2 class="section-title">Submission history</h2>
+  <div class="pills history__filters" role="group" aria-label="Filter by game">
+    @for (f of filters; track f.code) {
+      <button type="button" class="pill" [attr.aria-pressed]="filter() === f.code" (click)="setFilter(f.code)">
+        {{ f.label }}
+      </button>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <div class="card state" role="status">Loading your history…</div>
+  } @else if (visibleHistory().length === 0) {
+    <div class="card state">
+      <strong>{{ history().length === 0 ? 'No scores yet' : 'No scores for this game' }}</strong>
+      @if (history().length === 0) {
+        Submit your first score to start your history.
+      } @else {
+        Pick another game, or submit a score for this one.
+      }
+    </div>
+  } @else {
+    <div class="card table" role="table" aria-label="Your submitted scores">
+      <div class="table__head" role="row">
+        <span class="history__game" role="columnheader">Game</span>
+        <span class="table__name" role="columnheader">When</span>
+        <span class="table__num" role="columnheader">Points</span>
+      </div>
+      @for (s of visibleHistory(); track s.id) {
+        <div class="table__row" role="row">
+          <span class="history__game" role="cell">
+            <span class="chip" [class]="'chip ' + gameClass(s.game_code)">{{ labels[s.game_code] }}</span>
+          </span>
+          <span class="table__name history__when" role="cell">{{ s.created_at | date: 'MMM d, h:mm a' }}</span>
+          <span class="table__num mono-number" role="cell">+{{ s.points | number }}</span>
+        </div>
+      }
+    </div>
+  }
+</section>

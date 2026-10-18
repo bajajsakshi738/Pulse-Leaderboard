@@ -1,0 +1,107 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: var(--g-tint);
+  color: var(--g-text);
+}
+
+.stat__label {
+  font-size: 13px;
+}
+
+.stat__value {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.ranks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.rank-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  color: var(--ink);
+  text-decoration: none;
+  border-top: 4px solid var(--g);
+
+  &:hover {
+    background: var(--g-tint);
+  }
+}
+
+.rank-card__label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.rank-card__value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--g-text);
+}
+
+.rank-card__value--empty {
+  font-size: 18px;
+  color: var(--muted);
+  padding: 5px 0;
+}
+
+.rank-card__score {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.history__filters {
+  margin-bottom: 14px;
+}
+
+.history__game {
+  width: 190px;
+}
+
+.history__when {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+@media (max-width: 860px) {
+  .ranks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .history__game {
+    width: auto;
+    flex: 1;
+  }
+
+  .history__when {
+    display: none;
+  }
+}

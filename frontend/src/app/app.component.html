@@ -1,0 +1,43 @@
+@if (isAuthPage()) {
+  <router-outlet></router-outlet>
+} @else {
+  <div class="shell">
+    <app-sidebar [open]="menuOpen()" (closeMenu)="closeMenu()"></app-sidebar>
+
+    @if (menuOpen()) {
+      <div class="shell__scrim" (click)="closeMenu()" aria-hidden="true"></div>
+    }
+
+    <div class="shell__main">
+      <header class="topbar">
+        <span class="topbar__brand">
+          <span class="topbar__mark" aria-hidden="true"></span>
+          Pulse
+        </span>
+        <button
+          type="button"
+          class="topbar__menu"
+          [attr.aria-expanded]="menuOpen()"
+          aria-controls="app-sidebar"
+          [attr.aria-label]="menuOpen() ? 'Close menu' : 'Open menu'"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          <app-icon [name]="menuOpen() ? 'close' : 'menu'"></app-icon>
+        </button>
+      </header>
+
+      <main class="shell__content">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+}
+
+<div class="toasts" aria-live="polite">
+  @for (t of notify.toasts(); track t.id) {
+    <div class="toast" [class]="'toast toast--' + t.kind" [attr.role]="t.kind === 'error' ? 'alert' : 'status'">
+      <span>{{ t.message }}</span>
+      <button type="button" class="toast__close" (click)="notify.dismiss(t.id)">Dismiss</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,53 @@
+<aside class="sidebar" [class.sidebar--open]="open" id="app-sidebar">
+  <a class="sidebar__brand" routerLink="/leaderboard/global" (click)="closeMenu.emit()">
+    <span class="sidebar__mark" aria-hidden="true"></span>
+    Pulse
+  </a>
+
+  <nav aria-label="Leaderboards">
+    <p class="sidebar__label">Leaderboards</p>
+    @for (g of games; track g.code) {
+      <a
+        class="sidebar__link"
+        [class]="gameClass(g.code)"
+        [routerLink]="['/leaderboard', g.code]"
+        routerLinkActive="sidebar__link--active"
+        (click)="closeMenu.emit()"
+      >
+        <span class="sidebar__dot" aria-hidden="true"></span>
+        <span class="sidebar__text">{{ g.label }}</span>
+        @if (counts()[g.code] != null) {
+          <span class="sidebar__count">{{ counts()[g.code] }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <nav aria-label="Scores and reports">
+    <p class="sidebar__label">Explore</p>
+    @if (auth.isAuthenticated()) {
+      <a class="sidebar__link sidebar__link--plain" routerLink="/submit" routerLinkActive="sidebar__link--active" (click)="closeMenu.emit()">
+        <span class="sidebar__text">Submit a score</span>
+      </a>
+      <a class="sidebar__link sidebar__link--plain" routerLink="/profile" routerLinkActive="sidebar__link--active" (click)="closeMenu.emit()">
+        <span class="sidebar__text">My scores</span>
+      </a>
+    }
+    <a class="sidebar__link sidebar__link--plain" routerLink="/reports" routerLinkActive="sidebar__link--active" (click)="closeMenu.emit()">
+      <span class="sidebar__text">Top players</span>
+    </a>
+  </nav>
+
+  <div class="sidebar__footer">
+    @if (auth.isAuthenticated()) {
+      <div class="sidebar__user">
+        <span class="sidebar__avatar" aria-hidden="true">{{ auth.currentUser()?.username?.charAt(0)?.toUpperCase() }}</span>
+        <span class="sidebar__username">{{ auth.currentUser()?.username }}</span>
+      </div>
+      <button type="button" class="btn btn--ghost btn--sm btn--block" (click)="logout()">Log out</button>
+    } @else {
+      <a class="btn btn--sm btn--block" routerLink="/register" (click)="closeMenu.emit()">Sign up</a>
+      <a class="btn btn--ghost btn--sm btn--block" routerLink="/login" (click)="closeMenu.emit()">Log in</a>
+    }
+  </div>
+</aside>
