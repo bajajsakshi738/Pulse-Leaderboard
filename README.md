@@ -1,6 +1,6 @@
 # Pulse
 
-A real-time leaderboard I built to learn how live rankings work. Players submit scores, and the top 20 on the Global board updates in the browser every second.
+A real-time leaderboard I built to learn how live rankings work. Players submit scores and the top 20 on the Global board updates in the browser every second.
 
 Built with Go (Gin), PostgreSQL, Redis, WebSockets and Angular 18.
 
@@ -32,11 +32,9 @@ If the Redis write fails after Postgres worked, the score is safe but that playe
 
 About 30 Go tests, run with the race detector against a real Postgres and Redis. They cover input validation, register/login/submit, the Redis rebuild, logout, the rate limiter and the WebSocket origin check. The frontend and the broadcaster have no tests. A GitHub Actions workflow in `.github/workflows/ci.yml` runs them on every push.
 
-## What it doesn't do
+## Limitations
 
 - **Scores aren't verified.** They come from the client, so someone with an account can cheat. The rate limit and the 10,000 cap only limit the damage. A real fix is to have the server work out the score itself.
-- **It isn't deployed.** It runs locally with Docker. `backend/render.yaml` and `frontend/vercel.json` are from an early deploy attempt and I haven't run them.
-- **No load test,** so I have no numbers for concurrent users or latency.
 - **The rebuild only runs at startup.** If Redis restarts while the API is running, it won't notice.
 - **A retried score request counts twice.** There is no idempotency key.
 - **Public reads and WebSocket connections aren't rate limited,** and there is no cap on connections.
